@@ -65,9 +65,8 @@ namespace aocDay2 {
                         }
 
                         safeReports[report.index] = true;
-                    }
-
-                    if (aux < report.values[i])
+                    } 
+                    else
                     {
                         if (isDecreasing)
                         {
