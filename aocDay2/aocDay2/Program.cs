@@ -22,7 +22,7 @@ namespace aocDay2 {
 
             foreach (var report in reports.Select((values, index) => new { values, index }))
             {
-                var isDecreasing = false;
+                var areReportValuesDecreasing = false;
                 var aux = 0;
 
                 safeReports.Add(report.index, false);
@@ -31,59 +31,21 @@ namespace aocDay2 {
                 {
                     if (i == 0 && report.values.Count > 1)
                     {
-                        isDecreasing = report.values[i] > report.values[i + 1];
-                    }
+                        areReportValuesDecreasing = report.values[i] > report.values[i + 1];
 
-                    if (aux == 0)
-                    {
                         aux = report.values[i];
 
                         continue;
                     }
-
-                    if (aux == report.values[i])
+                    
+                    if (!IsSafe(aux, report.values[i], areReportValuesDecreasing, aux > report.values[i]))
                     {
                         safeReports[report.index] = false;
 
                         break;
                     }
 
-                    if (aux > report.values[i])
-                    {
-                        if (!isDecreasing)
-                        {
-                            safeReports[report.index] = false;
-
-                            break;
-                        }
-
-                        if (!IsSafe(aux, report.values[i]))
-                        {
-                            safeReports[report.index] = false;
-
-                            break;
-                        }
-
-                        safeReports[report.index] = true;
-                    } 
-                    else
-                    {
-                        if (isDecreasing)
-                        {
-                            safeReports[report.index] = false;
-
-                            break;
-                        }
-
-                        if (!IsSafe(report.values[i], aux))
-                        {
-                            safeReports[report.index] = false;
-
-                            break;
-                        }
-
-                        safeReports[report.index] = true;
-                    }
+                    safeReports[report.index] = true;
 
                     aux = report.values[i];
                 }
@@ -92,14 +54,24 @@ namespace aocDay2 {
             Console.WriteLine($"The number of safe reports are {safeReports.Count(sr => sr.Value)}");
         }
 
-        private static bool IsSafe(int value1, int value2)
+        private static bool IsSafe(int value1, int value2, bool areReportValuesDecreasing, bool isCurrentSequenceDecreasing)
         {
-            if (value1 < value2)
+            if ((areReportValuesDecreasing && !isCurrentSequenceDecreasing) || (!areReportValuesDecreasing && isCurrentSequenceDecreasing))
             {
-                throw new Exception("First value must be greather than second one.");
+                return false;
             }
 
-            return value1 - value2 >= 1 && value1 - value2 <= 3;
+            if (value1 == value2)
+            {
+                return false;
+            }
+            
+            if (isCurrentSequenceDecreasing)
+            {
+                return value1 - value2 >= 1 && value1 - value2 <= 3;
+            }
+
+            return value2 - value1 >= 1 && value2 - value1 <= 3;
         }
     }
 }
